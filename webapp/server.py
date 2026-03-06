@@ -1,9 +1,11 @@
 from pathlib import Path
+from datetime import date
 
 from aiohttp import web
 
 from bot.db import (
     add_workout,
+    get_connection,
     get_records,
     get_started_user,
     get_total_workout_days,
@@ -170,6 +172,77 @@ async def save_workout(request: web.Request) -> web.Response:
     return web.json_response({"ok": True, "saved": saved})
 
 
+async def save_record(request: web.Request) -> web.Response:
+    try:
+        payload = await request.json()
+    except Exception:
+        return web.json_response({"error": "invalid json"}, status=400)
+
+    user_id = payload.get("user_id")
+    exercise = str(payload.get("exercise", "")).strip()
+    best_weight = payload.get("best_weight")
+
+    if not isinstance(user_id, int):
+        return web.json_response({"error": "user_id must be int"}, status=400)
+    if not exercise:
+        return web.json_response({"error": "exercise is required"}, status=400)
+    try:
+        weight = float(best_weight)
+    except (TypeError, ValueError):
+        return web.json_response({"error": "best_weight must be number"}, status=400)
+    if weight <= 0:
+        return web.json_response({"error": "best_weight must be > 0"}, status=400)
+
+    if not get_started_user(user_id):
+        return web.json_response({"error": "user not found"}, status=404)
+
+    # Records are calculated from workouts, so a manual record is saved as a workout row.
+    add_workout(
+        user_id=user_id,
+        workout_date=date.today().isoformat(),
+        exercise=exercise,
+        weight=weight,
+        sets=1,
+        reps=1,
+    )
+    return web.json_response({"ok": True})
+
+
+async def delete_record(request: web.Request) -> web.Response:
+    try:
+        payload = await request.json()
+    except Exception:
+        return web.json_response({"error": "invalid json"}, status=400)
+
+    user_id = payload.get("user_id")
+    exercise = str(payload.get("exercise", "")).strip()
+
+    if not isinstance(user_id, int):
+        return web.json_response({"error": "user_id must be int"}, status=400)
+    if not exercise:
+        return web.json_response({"error": "exercise is required"}, status=400)
+
+    if not get_started_user(user_id):
+        return web.json_response({"error": "user not found"}, status=404)
+
+    with get_connection() as connection:
+        cursor = connection.cursor()
+        cursor.execute(
+            """
+            DELETE FROM workouts
+            WHERE user_id = ? AND exercise = ?
+            """,
+            (user_id, exercise),
+        )
+        deleted = cursor.rowcount
+        connection.commit()
+
+    if deleted == 0:
+        return web.json_response({"error": "record not found"}, status=404)
+
+    return web.json_response({"ok": True, "deleted": int(deleted)})
+
+
 def create_web_app() -> web.Application:
     app = web.Application()
     app.router.add_get("/", index)
@@ -177,6 +250,8 @@ def create_web_app() -> web.Application:
     app.router.add_get("/api/app-data", app_data)
     app.router.add_get("/api/faq", faq_data)
     app.router.add_post("/api/workouts", save_workout)
+    app.router.add_post("/api/records", save_record)
+    app.router.add_delete("/api/records", delete_record)
     app.router.add_static("/static/", STATIC_DIR, show_index=False)
     return app
 

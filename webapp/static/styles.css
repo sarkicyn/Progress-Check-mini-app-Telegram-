@@ -45,6 +45,11 @@ button {
   cursor: pointer;
 }
 
+.round-tool {
+  background: transparent;
+  border: 0;
+}
+
 .device-shell {
   width: min(100%, 390px);
   position: relative;
@@ -296,6 +301,21 @@ h2 {
   font-size: 12px;
 }
 
+.history-head-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-edit-btn {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
 .exercise-list {
   display: grid;
   gap: 8px;
@@ -312,21 +332,6 @@ h2 {
   white-space: nowrap;
 }
 
-.records-toolbar {
-  margin: 6px 0 14px;
-}
-
-.round-tool {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.85);
-  background: transparent;
-  color: var(--text);
-  display: grid;
-  place-items: center;
-  font-size: 14px;
-}
 
 .record-card {
   padding: 12px 14px;
@@ -410,7 +415,17 @@ h2 {
 .faq-card summary::-webkit-details-marker {
   display: none;
 }
-
+#delete-btn{
+font-size: 3em;
+color: #d3d4da;
+}
+#move-btn{
+  color: #d3d4da;
+  font-size: 3em;
+}
+#move-btn.active-tool{
+  color: #ff7b7b;
+}
 .faq-card p {
   margin-top: 10px;
   color: #d3d4da;
@@ -605,6 +620,15 @@ h2 {
   border-radius: 10px;
   padding: 12px 14px;
   z-index: 100;
+}
+
+.record-card.delete-mode {
+  cursor: pointer;
+  border-color: rgba(255, 123, 123, 0.65);
+}
+
+.record-card.delete-mode:hover {
+  background: linear-gradient(180deg, rgba(56, 34, 38, 0.96), rgba(35, 22, 25, 0.96));
 }
 
 @media (max-width: 420px) {
