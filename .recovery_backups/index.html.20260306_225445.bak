@@ -121,7 +121,7 @@
       </section>
 
       <section class="modal-step" data-step="form">
-        <label class="field-card">
+        <label class="field-card">th
           <span class="field-label">Название упражнения</span>
           <input type="text" id="exercise-name-input" placeholder="Например: Жим лежа">
         </label>

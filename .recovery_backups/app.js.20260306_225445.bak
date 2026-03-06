@@ -44,9 +44,9 @@ document.getElementById("close-workout-flow").addEventListener("click", closeWor
 document.getElementById("add-draft-item").addEventListener("click", openDraftFormForCreate);
 document.getElementById("confirm-draft-item").addEventListener("click", saveDraftItem);
 document.getElementById("save-workout-flow").addEventListener("click", handleSaveFlowButton);
-deleteWorkoutDayBtn.addEventListener("click", handleDeleteWorkoutDay);
-addRecordBtn.addEventListener("click", promptAddRecord);
-removeRecordBtn.addEventListener("click", toggleRecordsDeleteMode);
+deleteWorkoutDayBtn?.addEventListener("click", handleDeleteWorkoutDay);
+addRecordBtn?.addEventListener("click", promptAddRecord);
+removeRecordBtn?.addEventListener("click", toggleRecordsDeleteMode);
 
 dateInput.addEventListener("input", (event) => {
   if (!event.target.value) {
@@ -193,12 +193,12 @@ function renderHistory(history) {
 
 function renderRecords(records) {
   const root = document.getElementById("records-list");
-  removeRecordBtn.classList.toggle("active-tool", state.recordsDeleteMode);
+  removeRecordBtn?.classList.toggle("active-tool", state.recordsDeleteMode);
   root.innerHTML = "";
 
   if (!records.length) {
     state.recordsDeleteMode = false;
-    removeRecordBtn.classList.remove("active-tool");
+    removeRecordBtn?.classList.remove("active-tool");
     root.innerHTML = emptyCard("Рекордов пока нет.");
     return;
   }
